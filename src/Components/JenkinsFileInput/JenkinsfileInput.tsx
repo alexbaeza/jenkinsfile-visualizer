@@ -1,5 +1,7 @@
 import React from 'react';
 import CodeMirror, { ViewUpdate } from '@uiw/react-codemirror';
+import {StreamLanguage} from "@codemirror/language";
+import {groovy} from "@codemirror/legacy-modes/mode/groovy"; // Import Groovy language support
 
 interface JenkinsfileInputProps {
     jenkinsfileContent: string;
@@ -28,6 +30,7 @@ const JenkinsfileInput: React.FC<JenkinsfileInputProps> = ({
                 basicSetup
                 onChange={onChange}
                 className="flex-1 border rounded p-2"
+                extensions={[StreamLanguage.define(groovy)]}
             />
             {error && <p className="text-red-500 mt-2">{error}</p>}
         </div>
