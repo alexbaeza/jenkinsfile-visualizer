@@ -9,8 +9,40 @@ import PipelineView from "./Views/PipelineView";
 import {transformStagesToStageData} from "./utils/transform.utils";
 import LayoutToggle from "./Components/LayoutToggle";
 
+const sampleJenkinsfile = `
+pipeline {
+    agent any
+    stages {
+        stage('Build') {
+            steps {
+                echo 'Building...'
+            }
+        }
+        stage('Test') {
+            parallel {
+                stage('Unit Tests') {
+                    steps {
+                        echo 'Running Unit Tests...'
+                    }
+                }
+                stage('Integration Tests') {
+                    steps {
+                        echo 'Running Integration Tests...'
+                    }
+                }
+            }
+        }
+        stage('Deploy') {
+            steps {
+                echo 'Deploying...'
+            }
+        }
+    }
+}
+`;
+
 const App: React.FC = () => {
-    const [jenkinsfileContent, setJenkinsfileContent] = useState<string>('');
+    const [jenkinsfileContent, setJenkinsfileContent] = useState<string>(sampleJenkinsfile);
     const [transformedData, setTransformedData] = useState<StageData[]>([]);
     const [edges, setEdges] = useState<Edge[]>([]);
     const [error, setError] = useState<string | null>(null);
