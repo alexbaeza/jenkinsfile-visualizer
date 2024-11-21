@@ -1,4 +1,4 @@
-import { Stage } from '../types';
+import {Stage} from '../types';
 import {parseJenkinsfile} from "./parser.utils";
 
 // Sample Jenkinsfile content
@@ -37,41 +37,65 @@ pipeline {
 // Expected Output
 const expectedOutput: Stage[] = [
     {
-        name: "Build",
-        type: "stage",
-        steps: ["Building..."],
-        branches: []
+        "branches": [],
+        "name": "Build",
+        "steps": [
+            "Building..."
+        ],
+        "type": "stage"
     },
     {
-        name: "Test",
-        type: "parallel",
-        branches: [
+        "branches": [
             {
-                name: "Unit Tests",
-                type: "stage",
-                steps: ["Running Unit Tests..."],
-                branches: []
+                "branches": [],
+                "name": "Unit Tests",
+                "steps": [
+                    "Running Unit Tests..."
+                ],
+                "type": "stage"
             },
             {
-                name: "Integration Tests",
-                type: "stage",
-                steps: ["Running Integration Tests..."],
-                branches: []
+                "branches": [],
+                "name": "Integration Tests",
+                "steps": [
+                    "Running Integration Tests..."
+                ],
+                "type": "stage"
             }
-        ]
+        ],
+        "name": "Test",
+        "steps": [],
+        "type": "parallel"
     },
     {
-        name: "Deploy",
-        type: "stage",
-        steps: ["Deploying..."],
-        branches: []
+        "branches": [],
+        "name": "Unit Tests",
+        "steps": [
+            "Running Unit Tests..."
+        ],
+        "type": "stage"
+    },
+    {
+        "branches": [],
+        "name": "Integration Tests",
+        "steps": [
+            "Running Integration Tests..."
+        ],
+        "type": "stage"
+    },
+    {
+        "branches": [],
+        "name": "Deploy",
+        "steps": [
+            "Deploying..."
+        ],
+        "type": "stage"
     }
 ];
 
 describe("Jenkinsfile Parser", () => {
     it("should parse the sample Jenkinsfile correctly", () => {
         const parsedStages = parseJenkinsfile(sampleJenkinsfile);
-        console.log("Parsed Stages:", JSON.stringify(parsedStages, null, 2));
         expect(parsedStages).toEqual(expectedOutput); // Use toEqual for deep equality
     });
 });

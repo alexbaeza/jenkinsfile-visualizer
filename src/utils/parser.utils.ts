@@ -6,7 +6,6 @@ import { Stage } from "../types";
  * @returns An array of Stage objects representing the Pipeline structure.
  */
 export const parseJenkinsfile = (content: string): Stage[] => {
-    console.log("Starting to parse Jenkinsfile...");
 
     // Remove comments and unnecessary whitespace
     const cleanedContent = content.replace(/\/\/.*|\/\*[\s\S]*?\*\//g, '').trim();
@@ -14,7 +13,6 @@ export const parseJenkinsfile = (content: string): Stage[] => {
     // Extract the 'pipeline { ... }' block
     const pipelineBlock = extractBlock(cleanedContent, 'pipeline');
     if (pipelineBlock) {
-        console.log("Found 'pipeline' block.");
         return parseStages(pipelineBlock);
     } else {
         console.warn("No 'pipeline' block found in Jenkinsfile.");
@@ -86,7 +84,6 @@ const parseStages = (content: string): Stage[] => {
         // Check if the stage contains a 'parallel' block
         const parallelBlock = extractBlock(stageBlock, 'parallel');
         if (parallelBlock) {
-            console.log(`Stage '${stageName}' contains parallel blocks.`);
             const branches = parseStages(parallelBlock); // Recursively parse parallel branches
             stages.push({
                 name: stageName,
@@ -99,7 +96,6 @@ const parseStages = (content: string): Stage[] => {
             const stepsBlock = extractBlock(stageBlock, 'steps');
             let steps: string[] = [];
             if (stepsBlock) {
-                console.log(`Steps Content in '${stageName}':`, stepsBlock);
                 steps = extractSteps(stepsBlock);
             } else {
                 console.warn(`No 'steps' block found in stage '${stageName}'.`);
@@ -129,7 +125,6 @@ const extractSteps = (content: string): string[] => {
 
     while ((match = stepRegex.exec(content)) !== null) {
         steps.push(match[1]); // Collect step commands
-        console.log(`Found Step:`, match[1]);
     }
 
     return steps;

@@ -2,12 +2,11 @@ import React, { useState, useEffect } from 'react';
 import debounce from 'lodash/debounce';
 import { ViewUpdate } from '@uiw/react-codemirror';
 import { parseJenkinsfile } from './utils/parser.utils';
-import { Stage, StageData } from './types';
-import { Edge } from 'reactflow';
-import JenkinsfileInput from "./Components/JenkinsFileInput/JenkinsfileInput";
+import { Stage } from './types';
+import JenkinsfileInput from "./components/JenkinsFileInput/JenkinsfileInput";
 import PipelineView from "./Views/PipelineView";
-import {transformStagesToStageData} from "./utils/transform.utils";
-import LayoutToggle from "./Components/LayoutToggle";
+import LayoutToggle from "./components/LayoutToggle";
+import useScreenSize from "./hooks/useScreenSize";
 
 const sampleJenkinsfile = `
 pipeline {
@@ -42,9 +41,9 @@ pipeline {
 `;
 
 const App: React.FC = () => {
+    const screenSize = useScreenSize();
     const [jenkinsfileContent, setJenkinsfileContent] = useState<string>(sampleJenkinsfile);
-    const [transformedData, setTransformedData] = useState<StageData[]>([]);
-    const [edges, setEdges] = useState<Edge[]>([]);
+    const [parsedData, setParsedData] = useState<Stage[]>([]);
     const [error, setError] = useState<string | null>(null);
     const [isParsing, setIsParsing] = useState<boolean>(false);
     const [isColumnlayout, setColumnLayout] = useState<boolean>(true);
@@ -55,25 +54,26 @@ const App: React.FC = () => {
             setIsParsing(true);
             try {
                 const parsedStages: Stage[] = parseJenkinsfile(content);
-                const { transformed, edges } = transformStagesToStageData(parsedStages);
-                setTransformedData(transformed);
-                setEdges(edges);
+                setParsedData(parsedStages)
                 setError(null);
             } catch (err) {
                 console.error(err);
                 setError('Failed to parse the Jenkinsfile.');
-                setTransformedData([]);
-                setEdges([]);
+                setParsedData([]);
             } finally {
                 setIsParsing(false);
             }
         }, 500)
     ).current;
+    useEffect(() => {
+        if (screenSize.width < 800) {
+            setColumnLayout(false)
+        }
+    }, [screenSize]);
 
     useEffect(() => {
         if (jenkinsfileContent.trim() === '') {
-            setTransformedData([]);
-            setEdges([]);
+            setParsedData([]);
             setError(null);
             return;
         }
@@ -98,7 +98,7 @@ const App: React.FC = () => {
 
             <div
                 className={`flex ${
-                    isColumnlayout ? 'md:flex-row' : 'md:flex-col-reverse'
+                    isColumnlayout ? 'flex-row' : 'flex-col-reverse'
                 } gap-8`}
             >
                 {/* Jenkinsfile Input Section */}
@@ -111,7 +111,7 @@ const App: React.FC = () => {
                     error={error}
                 />
                 {/* Pipeline Visualization Section */}
-                <PipelineView isParsing={isParsing} data={transformedData} edges={edges} />
+                <PipelineView isParsing={isParsing} data={parsedData} />
 
             </div>
         </div>

@@ -1,17 +1,18 @@
 // src/Views/PipelineView.tsx
 
 import React from 'react';
-import { Edge } from 'reactflow';
-import { StageData } from '../types';
-import PipelineVisualization from "../Components/PipelineVisualizer/PipelineVisualization";
+import {Stage} from '../types';
+import PipelineVisualization from "../components/PipelineVisualizer/PipelineVisualization";
+import {transformStagesToStageData} from "../utils/transform.utils";
 
 interface PipelineViewProps {
     isParsing: boolean;
-    data: StageData[];
-    edges: Edge[];
+    data: Stage[];
 }
 
-const PipelineView: React.FC<PipelineViewProps> = ({isParsing, data, edges }) => {
+const PipelineView: React.FC<PipelineViewProps> = ({isParsing, data}) => {
+
+    const {transformed, edges} = transformStagesToStageData(data);
 
     return (<div className="flex-1 flex flex-col">
         <h2 className="text-xl font-semibold mb-2">Pipeline Visualization</h2>
@@ -21,7 +22,7 @@ const PipelineView: React.FC<PipelineViewProps> = ({isParsing, data, edges }) =>
             </div>
         )}
         {!isParsing && data.length > 0 ? (
-            <PipelineVisualization data={data} edges={edges}/>
+            <PipelineVisualization data={transformed} edges={edges}/>
         ) : (
             !isParsing && (
                 <div className="flex-1 flex items-center justify-center border rounded p-4 bg-white">
